@@ -1,0 +1,18 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Les utilisateurs ont un accès lecture seule à leur propre statut d'abonnement
+    // SEUL le backend (Cloud Functions avec Admin SDK) peut modifier ou écrire ce document !
+    match /subscriptions/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false; // INTERDICTION STRICTE CÔTÉ CLIENT - AUCUNE MODIFICATION FRAUDULEUSE POSSIBLE
+    }
+
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      // L'utilisateur peut modifier son profil mais JAMAIS les champs subscriptionStatus ou role
+      allow update: if request.auth != null && request.auth.uid == userId 
+                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['subscriptionStatus', 'subscriptionExpiry', 'isSubscribed', 'role']);
+    }
+  }
+}
