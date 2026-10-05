@@ -60,6 +60,17 @@ function hasValidWebhookSignature(signature, rawBody) {
 }
 
 // Middleware pour conserver le buffer brut (requis pour la vérification HMAC de la signature du webhook)
+app.use((req, res, next) => {
+    if (req.path === '/api/webhook/saaspay') {
+        const startedAt = Date.now();
+        console.info(`[HTTP] Webhook entrant ${req.method} ${req.path}`);
+        res.on('finish', () => {
+            console.info(`[HTTP] Webhook terminé ${req.method} ${req.path} ${res.statusCode} (${Date.now() - startedAt} ms)`);
+        });
+    }
+    next();
+});
+
 app.use(express.json({
     verify: (req, res, buf) => {
         req.rawBody = buf;
@@ -203,13 +214,13 @@ app.post('/api/webhook/saaspay', (req, res) => {
             return res.status(409).json({ error: 'Aucune session de paiement en attente pour cet utilisateur' });
         }
 
-        if (data.reference !== currentSub.reference) {
+        if (data.reference && data.reference !== currentSub.reference) {
             return res.status(409).json({ error: 'Référence de paiement inattendue' });
         }
-        if (Number(data.amount) !== currentSub.amount) {
+        if (data.amount !== undefined && Number(data.amount) !== currentSub.amount) {
             return res.status(409).json({ error: 'Montant de paiement inattendu' });
         }
-        if (String(data.currency || '').toUpperCase() !== currentSub.currency) {
+        if (data.currency && data.currency.toUpperCase() !== currentSub.currency) {
             return res.status(409).json({ error: 'Devise de paiement inattendue' });
         }
 
