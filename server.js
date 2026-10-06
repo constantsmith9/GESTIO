@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 // Configuration SaaSPay
 const SAASPAY_SECRET_KEY = process.env.SAASPAY_SECRET_KEY;
 const SAASPAY_WEBHOOK_SECRET = process.env.SAASPAY_WEBHOOK_SECRET;
-const SAASPAY_API_BASE_URL = process.env.SAASPAY_API_BASE_URL || 'https://api.saaspay.app/v1';
+const SAASPAY_API_BASE_URL = process.env.SAASPAY_API_BASE_URL || 'https://api.saspay.me/api/v1';
 const missingSecrets = [
     ['SAASPAY_SECRET_KEY', SAASPAY_SECRET_KEY],
     ['SAASPAY_WEBHOOK_SECRET', SAASPAY_WEBHOOK_SECRET]
