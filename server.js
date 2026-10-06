@@ -105,7 +105,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
         let externalSessionId;
 
         try {
-            const saaspayResponse = await axios.post(`${SAASPAY_API_BASE_URL}/checkout/sessions`, {
+             const saaspayResponse = await axios.post(`${SAASPAY_API_BASE_URL}/checkout-sessions/`, {
                 amount: amount,
                 currency: currency,
                 reference: reference,
